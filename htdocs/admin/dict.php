@@ -393,7 +393,7 @@ $tabrowid[5] = "rowid";
 $tabrowid[6] = "id";
 $tabrowid[7] = "id";
 $tabrowid[8] = "id";
-$tabrowid[9] = "code_iso";
+$tabrowid[9] = "";
 $tabrowid[10] = "";
 $tabrowid[11] = "rowid";
 $tabrowid[12] = "";
@@ -733,8 +733,7 @@ if (GETPOST('actionadd') || GETPOST('actionmodify'))
 			if ($result)
 			{
 				$obj = $db->fetch_object($result);
-				$newid = $obj->newid;
-
+				$newid = ($obj->newid +1);
 			} else {
 				dol_print_error($db);
 			}
@@ -853,8 +852,7 @@ if (GETPOST('actionadd') || GETPOST('actionmodify'))
 
 			$i++;
 		}
-		$sql .= " WHERE ".$rowidcol." = '$rowid' ";
-
+		$sql .= " WHERE ".$rowidcol." = ".(int) $db->escape($rowid);
 
 		if (in_array('entity', $listfieldmodify)) $sql .= " AND entity = '".getEntity($tabname[$id])."'";
 
