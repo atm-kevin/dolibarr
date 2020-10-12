@@ -393,7 +393,7 @@ $tabrowid[5] = "rowid";
 $tabrowid[6] = "id";
 $tabrowid[7] = "id";
 $tabrowid[8] = "id";
-$tabrowid[9] = "";
+$tabrowid[9] = "code_iso";
 $tabrowid[10] = "";
 $tabrowid[11] = "rowid";
 $tabrowid[12] = "";
@@ -724,7 +724,9 @@ if (GETPOST('actionadd') || GETPOST('actionmodify'))
 	// If check ok and action add, add the line
 	if ($ok && GETPOST('actionadd'))
 	{
-		if ($tabrowid[$id])
+		// Dans le cas d'un dictionnaire ne possédant pas, en base, de colonne rowid de type int (exemple: table llx_c_currencies),
+		// on gère un $tabrowid[$id] de type 'string' (exemple : la table llx_c_currencies possède une colonne code_iso qui fait office de clé primaire)
+		if ($tabrowid[$id] && $tabrowid[$id] == 'rowid')
 		{
 			// Get free id for insert
 			$newid = 0;
@@ -752,6 +754,7 @@ if (GETPOST('actionadd') || GETPOST('actionmodify'))
 		if ($tabrowid[$id] && !in_array($tabrowid[$id], $listfieldinsert))
 			$sql .= $newid.",";
 		$i = 0;
+
 		foreach ($listfieldinsert as $f => $value)
 		{
 			$keycode = $listfieldvalue[$i];
@@ -852,12 +855,20 @@ if (GETPOST('actionadd') || GETPOST('actionmodify'))
 
 			$i++;
 		}
-		$sql .= " WHERE ".$rowidcol." = ".(int) $db->escape($rowid);
+		// Dans le cas d'un dictionnaire ne possédant pas, en base, de colonne rowid de type int (exemple: table llx_c_currencies),
+		// on gère un $rowidcol de type 'string' (exemple : la table llx_c_currencies possède une colonne code_iso qui fait office de clé primaire)
+		$sql .= " WHERE ".$rowidcol." = ";
+		if($rowidcol == 'rowid'){
+			$sql .= intval($rowid);
+		}
+		else{
+			$sql .= "'".$rowid."'";
+		}
 
 		if (in_array('entity', $listfieldmodify)) $sql .= " AND entity = '".getEntity($tabname[$id])."'";
 
 		dol_syslog("actionmodify", LOG_DEBUG);
-		//print $sql;
+
 		$resql = $db->query($sql);
 		if (!$resql)
 		{
