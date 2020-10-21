@@ -749,12 +749,12 @@ if ($object->id > 0)
         $sql .= ", c.tva as total_tva";
         $sql .= ", c.total_ttc";
         $sql .= ", c.ref, c.ref_client, c.fk_statut, c.facture";
-        $sql .= ", c.date_commande as dc";
+		$sql.= ", c.date_commande as dc, c.date_livraison as dl";
 		$sql .= " FROM ".MAIN_DB_PREFIX."societe as s, ".MAIN_DB_PREFIX."commande as c";
 		$sql .= " WHERE c.fk_soc = s.rowid ";
 		$sql .= " AND s.rowid = ".$object->id;
 		$sql .= " AND c.entity IN (".getEntity('commande').')';
-		$sql .= " ORDER BY c.date_commande DESC";
+		$sql.= " ORDER BY c.date_livraison DESC";
 
 		$resql = $db->query($sql);
 		if ($resql)
@@ -806,7 +806,7 @@ if ($object->id > 0)
 				print '<tr class="oddeven">';
                 print '<td class="nowrap">';
                 print $commande_static->getNomUrl(1);
-				print '</td><td class="right" width="80px">'.dol_print_date($db->jdate($objp->dc), 'day')."</td>\n";
+				print '</td><td align="right" width="80px">'.dol_print_date($db->jdate($objp->dl),'day')."</td>\n";
 				print '<td class="right" style="min-width: 60px">'.price($objp->total_ht).'</td>';
 				print '<td class="right" style="min-width: 60px" class="nowrap">'.$commande_static->LibStatut($objp->fk_statut, $objp->facture, 5).'</td></tr>';
 				$i++;

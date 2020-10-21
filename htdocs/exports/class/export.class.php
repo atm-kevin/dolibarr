@@ -237,6 +237,7 @@ class Export
 			if ($i > 0) $sql .= ', ';
 			else $i++;
 
+			$key = str_replace('\\', '', $key);
 			if (strpos($key, ' as ') === false) {
 				$newfield = $key.' as '.str_replace(array('.', '-', '(', ')'), '_', $key);
 			} else {
@@ -263,7 +264,12 @@ class Export
 		// Add the order
 		$sql .= $this->array_export_sql_order[$indice];
 
-		// Add the HAVING part.
+	    if (strpos($sql, 'GROUP_CONCAT')!==false)
+	    {
+		    $sql .= ' GROUP BY s.rowid'; // Que le module Societe qui utilise un GROUP_CONCAT donc je filtre directement sur son ID
+	    }
+
+	    // Add the HAVING part.
 		if (is_array($array_filterValue) && !empty($array_filterValue))
 		{
 		    // Loop on each condition to add
