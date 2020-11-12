@@ -1771,6 +1771,7 @@ if ($action == 'create' && $usercancreate)
 	// Note that $action and $object may be modified by hook
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action);
 	print $hookmanager->resPrint;
+
 	if (empty($reshook)) {
 		if (!empty($conf->global->THIRDPARTY_PROPAGATE_EXTRAFIELDS_TO_ORDER)) {
 			// copy from thirdparty
@@ -1921,6 +1922,7 @@ if ($action == 'create' && $usercancreate)
 		$author = new User($db);
 		$author->fetch($object->user_author_id);
 
+		$object->fetch_thirdparty();
 		$res = $object->fetch_optionals();
 
 		$head = commande_prepare_head($object);
